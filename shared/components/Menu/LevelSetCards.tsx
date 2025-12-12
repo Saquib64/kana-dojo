@@ -329,6 +329,7 @@ const LevelSetCards = <TLevel extends string, TItem>({
           playClick();
           setIsModalOpen(true);
         }}
+        className="px-2 py-3"
       >
         <MousePointer />
         Quick Select

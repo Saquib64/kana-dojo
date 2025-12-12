@@ -5,6 +5,10 @@ import Subset from './Subset';
 import { useClick } from '@/shared/hooks/useAudio';
 import { cardBorderStyles } from '@/shared/lib/styles';
 import { ChevronUp } from 'lucide-react';
+import { MousePointer } from 'lucide-react';
+import { kana } from '@/features/Kana/data/kana';
+import useKanaStore from '@/features/Kana/store/useKanaStore';
+import { ActionButton } from '@/shared/components/ui/ActionButton';
 
 const STORAGE_KEY = 'kana-hidden-subsets';
 
@@ -43,15 +47,13 @@ const kanaGroups = [
 ];
 
 const getDefaultHiddenSubsets = () => {
-  const allToggleKeys = kanaGroups.flatMap((group) => [
+  const allToggleKeys = kanaGroups.flatMap(group => [
     group.name.toLowerCase(),
-    ...group.subsets.map((subset) => subset.name.toLowerCase())
+    ...group.subsets.map(subset => subset.name.toLowerCase())
   ]);
 
-  const shown = new Set(
-    DEFAULT_SHOWN_SUBSETS.map((name) => name.toLowerCase())
-  );
-  return allToggleKeys.filter((key) => !shown.has(key));
+  const shown = new Set(DEFAULT_SHOWN_SUBSETS.map(name => name.toLowerCase()));
+  return allToggleKeys.filter(key => !shown.has(key));
 };
 
 const getInitialState = (): string[] => {
@@ -77,15 +79,17 @@ const saveToSessionStorage = (hiddenSubsets: string[]) => {
 const KanaCards = () => {
   const { playClick } = useClick();
 
+  const addKanaGroupIndices = useKanaStore(state => state.addKanaGroupIndices);
+
   const [hiddenSubsets, setHiddenSubsets] = useState<string[]>(getInitialState);
 
   const toggleVisibility = (name: string) => {
     playClick();
     const lowerName = name.toLowerCase();
 
-    setHiddenSubsets((prev) => {
+    setHiddenSubsets(prev => {
       const updated = prev.includes(lowerName)
-        ? prev.filter((item) => item !== lowerName)
+        ? prev.filter(item => item !== lowerName)
         : [...prev, lowerName];
 
       saveToSessionStorage(updated);
@@ -105,7 +109,7 @@ const KanaCards = () => {
 
   return (
     <div className="flex flex-col gap-2 sm:flex-row w-full sm:items-start">
-      {kanaGroups.map((group) => {
+      {kanaGroups.map(group => {
         const groupHidden = isHidden(group.name);
         const [mainTitle, japaneseTitle] = group.name.split(' ');
 
@@ -117,6 +121,28 @@ const KanaCards = () => {
                 cardBorderStyles
               )}
             >
+              {group.name === 'Hiragana ひらがな' && (
+                <div className="flex flex-row gap-2 w-full">
+                  <ActionButton
+                    onClick={e => {
+                      e.currentTarget.blur();
+                      playClick();
+                      const indices = kana
+                        .map((k, i) => ({ k, i }))
+                        .filter(
+                          ({ k }) => !k.groupName.startsWith('challenge.')
+                        )
+                        .map(({ i }) => i);
+                      addKanaGroupIndices(indices);
+                    }}
+                    className="px-2 py-3"
+                  >
+                    <MousePointer />
+                    Select All Kana
+                  </ActionButton>
+                </div>
+              )}
+
               {/* Group Header */}
               <legend
                 className="group text-2xl hover:cursor-pointer flex flex-row items-center gap-1"
