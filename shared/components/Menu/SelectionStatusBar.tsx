@@ -234,7 +234,7 @@ const SelectionStatusBar = () => {
     : sortedSets.length > 0
       ? formatLevelsAsRanges(sortedSets)
           .split(', ')
-          .map(range => `Level ${range}`)
+          .map(range => `${range.includes('-') ? 'Levels' : 'Level'} ${range}`)
           .join(', ')
       : 'None';
 

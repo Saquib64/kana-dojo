@@ -80,12 +80,9 @@ const QuickSelectModal = ({
               playClick();
               onClose();
             }}
-            className="p-2 rounded-xl hover:bg-[var(--card-color)] transition-colors flex-shrink-0"
+            className="p-2 rounded-xl hover:bg-[var(--card-color)] transition-colors flex-shrink-0 hover:cursor-pointer"
           >
-            <X
-              size={24}
-              className="text-[var(--secondary-color)] hover:cursor-pointer"
-            />
+            <X size={24} className="text-[var(--secondary-color)] " />
           </button>
         </div>
 
