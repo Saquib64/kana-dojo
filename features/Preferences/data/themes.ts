@@ -252,7 +252,18 @@ const baseThemeSets: BaseThemeGroup[] = [
     name: 'Dark',
     icon: Moon,
     themes: [
-      
+      {
+        id: 'natto-brown',
+        backgroundColor: 'oklch(22.0% 0.032 60.0 / 1)',
+        mainColor: 'oklch(58.0% 0.095 65.0 / 1)',
+        secondaryColor: 'oklch(70.0% 0.075 55.0 / 1)'
+      },
+      {
+        id: 'sushi-counter',
+        backgroundColor: 'oklch(23.0% 0.028 70.0 / 1)',
+        mainColor: 'oklch(70.0% 0.145 20.0 / 1)',
+        secondaryColor: 'oklch(68.0% 0.095 75.0 / 1)',
+      },
       {
         id: 'samurai-steel',
         backgroundColor: 'oklch(18.0% 0.022 250.0 / 1)',
