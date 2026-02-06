@@ -395,7 +395,16 @@ export default function ActiveGame<T>({
         setBottomBarState('wrong');
       }
     }
-  }, [placedTiles, currentQuestion, playClick, correctAnswer, isTypeMode, userAnswer, checkAnswer, isReverseActive]);
+  }, [
+    placedTiles,
+    currentQuestion,
+    playClick,
+    correctAnswer,
+    isTypeMode,
+    userAnswer,
+    checkAnswer,
+    isReverseActive,
+  ]);
 
   // Handle Continue/Next button (auto-advance regardless of correctness)
   const handleContinue = useCallback(() => {
@@ -556,7 +565,7 @@ export default function ActiveGame<T>({
                     spellCheck={false}
                     placeholder='Type your answer...'
                     className={clsx(
-                      'w-full rounded-xl border-2 bg-transparent px-4 py-3 text-center text-2xl outline-none transition-colors sm:text-3xl',
+                      'w-full rounded-xl border-2 bg-transparent px-4 py-3 text-center text-2xl transition-colors outline-none sm:text-3xl',
                       isChecking && checkedResult?.isCorrect
                         ? 'border-green-500 text-green-500'
                         : isChecking && !checkedResult?.isCorrect
@@ -586,9 +595,7 @@ export default function ActiveGame<T>({
                       {placedTiles.map(char => {
                         // Get display text - use renderOption if available
                         const displayChar = renderOption
-                          ? String(
-                              renderOption(char, items, isReverseActive),
-                            )
+                          ? String(renderOption(char, items, isReverseActive))
                           : char;
                         return (
                           <ActiveTile
@@ -608,65 +615,66 @@ export default function ActiveGame<T>({
                 </div>
 
                 {/* Available Tiles - 2 rows */}
-            {(() => {
-              const tilesPerRow = 2;
-              const topRowTiles = shuffledOptions.slice(0, tilesPerRow);
-              const bottomRowTiles = shuffledOptions.slice(tilesPerRow);
+                {(() => {
+                  const tilesPerRow = 2;
+                  const topRowTiles = shuffledOptions.slice(0, tilesPerRow);
+                  const bottomRowTiles = shuffledOptions.slice(tilesPerRow);
 
-              const renderTile = (option: string) => {
-                const isPlaced = placedTiles.includes(option);
-                // Get display text - use renderOption if available
-                const displayChar = renderOption
-                  ? String(renderOption(option, items, isReverseActive))
-                  : option;
+                  const renderTile = (option: string) => {
+                    const isPlaced = placedTiles.includes(option);
+                    // Get display text - use renderOption if available
+                    const displayChar = renderOption
+                      ? String(renderOption(option, items, isReverseActive))
+                      : option;
 
-                return (
-                  <motion.div
-                    key={`tile-slot-${option}`}
-                    className='relative'
-                    variants={tileEntryVariants}
-                    style={{ perspective: 1000 }}
-                  >
-                    {/* Blank tile underneath */}
-                    <BlankTile
-                      char={displayChar}
-                      tileSizeClass={tileSizeClass}
-                    />
-
-                    {/* Active tile on top when NOT placed */}
-                    {!isPlaced && (
-                      <div className='absolute inset-0 z-10'>
-                        <ActiveTile
-                          id={`tile-${option}`}
+                    return (
+                      <motion.div
+                        key={`tile-slot-${option}`}
+                        className='relative'
+                        variants={tileEntryVariants}
+                        style={{ perspective: 1000 }}
+                      >
+                        {/* Blank tile underneath */}
+                        <BlankTile
                           char={displayChar}
-                          onClick={() => handleTileClick(option)}
-                          isDisabled={isChecking}
                           tileSizeClass={tileSizeClass}
                         />
-                      </div>
-                    )}
-                  </motion.div>
-                );
-              };
 
-              return shuffledOptions.length > 0 ? (
-                <motion.div
-                  className='flex flex-col items-center gap-3 sm:gap-4'
-                  variants={tileContainerVariants}
-                  initial='hidden'
-                  animate='visible'
-                >
-                  <motion.div className='flex flex-row justify-center gap-3 sm:gap-4'>
-                    {topRowTiles.map(option => renderTile(option))}
-                  </motion.div>
-                  {bottomRowTiles.length > 0 && (
-                    <motion.div className='flex flex-row justify-center gap-3 sm:gap-4'>
-                      {bottomRowTiles.map(option => renderTile(option))}
+                        {/* Active tile on top when NOT placed */}
+                        {!isPlaced && (
+                          <div className='absolute inset-0 z-10'>
+                            <ActiveTile
+                              id={`tile-${option}`}
+                              char={displayChar}
+                              onClick={() => handleTileClick(option)}
+                              isDisabled={isChecking}
+                              tileSizeClass={tileSizeClass}
+                            />
+                          </div>
+                        )}
+                      </motion.div>
+                    );
+                  };
+
+                  return shuffledOptions.length > 0 ? (
+                    <motion.div
+                      key={questionKey}
+                      className='flex flex-col items-center gap-3 sm:gap-4'
+                      variants={tileContainerVariants}
+                      initial='hidden'
+                      animate='visible'
+                    >
+                      <motion.div className='flex flex-row justify-center gap-3 sm:gap-4'>
+                        {topRowTiles.map(option => renderTile(option))}
+                      </motion.div>
+                      {bottomRowTiles.length > 0 && (
+                        <motion.div className='flex flex-row justify-center gap-3 sm:gap-4'>
+                          {bottomRowTiles.map(option => renderTile(option))}
+                        </motion.div>
+                      )}
                     </motion.div>
-                  )}
-                </motion.div>
-              ) : null;
-            })()}
+                  ) : null;
+                })()}
               </>
             )}
           </motion.div>
@@ -680,8 +688,10 @@ export default function ActiveGame<T>({
           canCheck={canCheck}
           feedbackTitle={showContinue ? 'Correct!' : 'Wrong!'}
           feedbackContent={
-            showTryAgain && isTypeMode && getCorrectAnswer && currentQuestion
-              ? getCorrectAnswer(currentQuestion, isReverseActive)
+            showTryAgain && currentQuestion
+              ? isTypeMode && getCorrectAnswer
+                ? getCorrectAnswer(currentQuestion, isReverseActive)
+                : correctAnswer
               : ''
           }
           buttonRef={buttonRef}

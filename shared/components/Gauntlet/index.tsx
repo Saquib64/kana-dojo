@@ -209,19 +209,15 @@ export default function Gauntlet<T>({ config, onCancel }: GauntletProps<T>) {
     statsTracking.recordDojoUsed(dojoType);
   }, [dojoType]);
 
-  // Generate options when question changes (Pick mode only)
-  useEffect(() => {
-    if (currentQuestion && generateOptions && phase === 'playing' && gameMode === 'Pick') {
-      const options = generateOptions(
-        currentQuestion.item,
-        items,
-        4,
-        isReverseActive,
-      );
+  // Helper: generate shuffled options for a given question item (Pick mode)
+  const generateShuffledOptions = useCallback(
+    (questionItem: T) => {
+      if (!generateOptions || gameMode !== 'Pick') return;
+      const options = generateOptions(questionItem, items, 4, isReverseActive);
       setShuffledOptions(shuffle(options));
-      setWrongSelectedAnswers([]);
-    }
-  }, [currentQuestion, gameMode, generateOptions, items, isReverseActive, phase]);
+    },
+    [generateOptions, gameMode, items, isReverseActive],
+  );
 
   // Handle game start
   const handleStart = useCallback(() => {
@@ -257,27 +253,12 @@ export default function Gauntlet<T>({ config, onCancel }: GauntletProps<T>) {
     setWrongSelectedAnswers([]);
 
     // Generate initial options for the first question (Pick mode only)
-    if (queue.length > 0 && generateOptions && gameMode === 'Pick') {
-      const firstQuestion = queue[0];
-      const options = generateOptions(
-        firstQuestion.item,
-        items,
-        4,
-        isReverseActive,
-      );
-      setShuffledOptions(shuffle(options));
+    if (queue.length > 0) {
+      generateShuffledOptions(queue[0].item);
     }
 
     setPhase('playing');
-  }, [
-    items,
-    repetitions,
-    difficulty,
-    gameMode,
-    generateOptions,
-    isReverseActive,
-    playClick,
-  ]);
+  }, [items, repetitions, difficulty, generateShuffledOptions, playClick]);
 
   // Get a unique identifier for the current question item
   const getItemId = useCallback((item: T): string => {
@@ -285,7 +266,7 @@ export default function Gauntlet<T>({ config, onCancel }: GauntletProps<T>) {
     if (typeof item === 'object' && item !== null) {
       const obj = item as Record<string, unknown>;
       if ('kana' in obj) return String(obj.kana);
-      if ('kanji' in obj) return String(obj.kanji);
+      if ('kanjiChar' in obj) return String(obj.kanjiChar);
       if ('word' in obj) return String(obj.word);
       if ('id' in obj) return String(obj.id);
     }
@@ -442,8 +423,13 @@ export default function Gauntlet<T>({ config, onCancel }: GauntletProps<T>) {
           });
           return;
         }
-        // Move to the next question in the queue
-        setCurrentIndex(prev => prev + 1);
+        // Move to the next question in the queue and pre-generate options
+        const nextIndex = currentIndex + 1;
+        const nextQuestion = questionQueue[nextIndex];
+        if (nextQuestion) {
+          generateShuffledOptions(nextQuestion.item);
+        }
+        setCurrentIndex(nextIndex);
       } else {
         // Wrong answer: re-queue this question at a random later position
         // so the user must answer it correctly to complete the gauntlet.
@@ -451,14 +437,16 @@ export default function Gauntlet<T>({ config, onCancel }: GauntletProps<T>) {
         // has already grown beyond 3x the original target, stop re-queuing
         // (the player is struggling but still has lives due to regen).
         const maxQueueSize = totalQuestions * 3;
-        setQuestionQueue(prev => {
-          if (prev.length >= maxQueueSize) {
-            // Queue is very large — skip re-queuing to prevent runaway growth
-            return prev;
-          }
-          const newQueue = [...prev];
+
+        // Compute the new queue eagerly so we can read the next question
+        // and generate options synchronously (avoiding a stale-render gap).
+        const prevQueue = questionQueue;
+        let newQueue: GauntletQuestion<T>[];
+        if (prevQueue.length >= maxQueueSize) {
+          newQueue = prevQueue;
+        } else {
+          newQueue = [...prevQueue];
           const failedQuestion = { ...newQueue[currentIndex] };
-          // Insert at a random position between currentIndex+1 and end of queue
           const remainingLength = newQueue.length - (currentIndex + 1);
           const insertOffset =
             remainingLength > 0
@@ -466,13 +454,26 @@ export default function Gauntlet<T>({ config, onCancel }: GauntletProps<T>) {
               : 1;
           const insertPos = currentIndex + insertOffset;
           newQueue.splice(insertPos, 0, failedQuestion);
-          return newQueue;
-        });
+        }
+        setQuestionQueue(newQueue);
+
+        // Generate options for the next question synchronously
+        const nextIndex = currentIndex + 1;
+        const nextQuestion = newQueue[nextIndex];
+        if (nextQuestion) {
+          generateShuffledOptions(nextQuestion.item);
+        }
         // Still advance past the current slot (the re-queued copy is ahead)
-        setCurrentIndex(prev => prev + 1);
+        setCurrentIndex(nextIndex);
       }
     },
-    [currentIndex, endGame, totalQuestions],
+    [
+      currentIndex,
+      endGame,
+      totalQuestions,
+      generateShuffledOptions,
+      questionQueue,
+    ],
   );
 
   const submitAnswer = useCallback(
