@@ -163,7 +163,7 @@ export default function CharacterMasteryPanel({
       transition={{ duration: 0.5, delay: 0.2 }}
       className={cn(
         'group relative overflow-hidden rounded-3xl',
-        'border border-(--border-color)/50 bg-(--card-color)',
+        'bg-(--card-color)',
         'p-6',
         className,
       )}
