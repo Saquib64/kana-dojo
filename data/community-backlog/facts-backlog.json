@@ -231,18 +231,18 @@
     "id": 39,
     "fact": "Japan has professional cuddlers you can hire to hold you while you nap - reflecting the country's epidemic of loneliness and touch starvation.",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 40,
     "fact": "There are over 200 different KitKat flavors created for Japan including sake, wasabi, sweet potato, and cherry blossom.",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 41,
     "fact": "The Japanese word 'yÅ«gen' (å¹½çŽ„) describes a profound awareness of the universe that triggers emotional responses too deep for words.",
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
