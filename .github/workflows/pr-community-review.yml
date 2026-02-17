@@ -21,7 +21,7 @@ jobs:
     # Skip automation PRs to save GitHub Actions minutes - only review external contributor PRs
     if: |
       !startsWith(github.event.pull_request.head.ref, 'automation/') &&
-      (contains(github.event.pull_request.title, 'theme') || contains(github.event.pull_request.title, 'fact') || contains(github.event.pull_request.title, 'Theme') || contains(github.event.pull_request.title, 'Fact') || contains(github.event.pull_request.title, 'proverb') || contains(github.event.pull_request.title, 'Proverb') || contains(github.event.pull_request.title, 'trivia') || contains(github.event.pull_request.title, 'Trivia') || contains(github.event.pull_request.title, 'grammar') || contains(github.event.pull_request.title, 'Grammar') || contains(github.event.pull_request.title, 'anime quote') || contains(github.event.pull_request.title, 'Anime Quote') || contains(github.event.pull_request.title, 'anime-quote') || contains(github.event.pull_request.title, 'Anime-Quote'))
+      (contains(github.event.pull_request.title, 'theme') || contains(github.event.pull_request.title, 'fact') || contains(github.event.pull_request.title, 'Theme') || contains(github.event.pull_request.title, 'Fact') || contains(github.event.pull_request.title, 'proverb') || contains(github.event.pull_request.title, 'Proverb') || contains(github.event.pull_request.title, 'trivia') || contains(github.event.pull_request.title, 'Trivia') || contains(github.event.pull_request.title, 'grammar') || contains(github.event.pull_request.title, 'Grammar') || contains(github.event.pull_request.title, 'anime quote') || contains(github.event.pull_request.title, 'Anime Quote') || contains(github.event.pull_request.title, 'anime-quote') || contains(github.event.pull_request.title, 'Anime-Quote') || contains(github.event.pull_request.title, 'idiom') || contains(github.event.pull_request.title, 'Idiom') || contains(github.event.pull_request.title, 'regional dialect') || contains(github.event.pull_request.title, 'Regional Dialect') || contains(github.event.pull_request.title, 'regional-dialect') || contains(github.event.pull_request.title, 'Regional-Dialect'))
 
     steps:
       - name: Checkout base branch
@@ -98,8 +98,10 @@ jobs:
             const isTriviaContribution = prTitleLower.includes('trivia');
             const isGrammarContribution = prTitleLower.includes('grammar');
             const isAnimeQuoteContribution = prTitleLower.includes('anime quote') || prTitleLower.includes('anime-quote') || prTitleLower.includes('animequote');
+            const isIdiomContribution = prTitleLower.includes('idiom');
+            const isRegionalDialectContribution = prTitleLower.includes('regional dialect') || prTitleLower.includes('regional-dialect') || prTitleLower.includes('regionaldialect');
 
-            if (!isThemeContribution && !isFactContribution && !isProverbContribution && !isTriviaContribution && !isGrammarContribution && !isAnimeQuoteContribution) {
+            if (!isThemeContribution && !isFactContribution && !isProverbContribution && !isTriviaContribution && !isGrammarContribution && !isAnimeQuoteContribution && !isIdiomContribution && !isRegionalDialectContribution) {
               console.log('Not a community contribution PR');
               return;
             }
@@ -199,6 +201,28 @@ jobs:
                   if (matches.length > 0) {
                     foundIssue = matches[0].number;
                     console.log(`Found matching anime quote issue: #${foundIssue}`);
+                  }
+                }
+              } else if (isIdiomContribution) {
+                const idiomIdMatch = prTitle.match(/#(\d+)/);
+                if (idiomIdMatch) {
+                  const idiomId = idiomIdMatch[1];
+                  console.log(`Looking for idiom issue: #${idiomId}`);
+                  const matches = await searchOpenCommunityIssues(`"Add New Japanese Idiom #${idiomId}"`);
+                  if (matches.length > 0) {
+                    foundIssue = matches[0].number;
+                    console.log(`Found matching idiom issue: #${foundIssue}`);
+                  }
+                }
+              } else if (isRegionalDialectContribution) {
+                const dialectIdMatch = prTitle.match(/#(\d+)/);
+                if (dialectIdMatch) {
+                  const dialectId = dialectIdMatch[1];
+                  console.log(`Looking for regional dialect issue: #${dialectId}`);
+                  const matches = await searchOpenCommunityIssues(`"Add Regional Dialect Entry #${dialectId}"`);
+                  if (matches.length > 0) {
+                    foundIssue = matches[0].number;
+                    console.log(`Found matching regional dialect issue: #${foundIssue}`);
                   }
                 }
               }
@@ -454,6 +478,90 @@ jobs:
                 }
               } catch (e) {
                 errors.push(`Error reading anime quotes file: ${e.message}`);
+              }
+            } else if (isIdiomContribution) {
+              validationType = 'idiom';
+              console.log('Validating idiom contribution');
+
+              const allowed = ['community/content/japanese-idioms.json'];
+              const changed = reviewedFiles.map(function(f) { return f.filename; });
+              const invalidFiles = changed.filter(function(p) { return !allowed.includes(p); });
+              if (changed.length !== 1 || invalidFiles.length > 0) {
+                errors.push('Idiom PRs must modify only community/content/japanese-idioms.json');
+              }
+
+              try {
+                const idiomsPath = 'pr-head/community/content/japanese-idioms.json';
+                if (!fs.existsSync(idiomsPath)) {
+                  errors.push('japanese-idioms.json file not found in PR');
+                } else {
+                  const content = fs.readFileSync(idiomsPath, 'utf8');
+
+                  try {
+                    const idioms = JSON.parse(content);
+
+                    if (!Array.isArray(idioms)) {
+                      errors.push('japanese-idioms.json should be an array');
+                    } else {
+                      const invalidIdioms = idioms.filter(function(i) {
+                        return !i.japanese || !i.romaji || !i.english || !i.meaning;
+                      });
+                      if (invalidIdioms.length > 0) {
+                        errors.push('Each idiom must have japanese, romaji, english, and meaning fields');
+                      }
+                    }
+                  } catch (parseErr) {
+                    errors.push(`Invalid JSON: ${parseErr.message}`);
+                  }
+
+                  if (!targetIssue) {
+                    warnings.push('Could not find a matching community issue for this idiom');
+                  }
+                }
+              } catch (e) {
+                errors.push(`Error reading idioms file: ${e.message}`);
+              }
+            } else if (isRegionalDialectContribution) {
+              validationType = 'regional dialect';
+              console.log('Validating regional dialect contribution');
+
+              const allowed = ['community/content/japanese-regional-dialects.json'];
+              const changed = reviewedFiles.map(function(f) { return f.filename; });
+              const invalidFiles = changed.filter(function(p) { return !allowed.includes(p); });
+              if (changed.length !== 1 || invalidFiles.length > 0) {
+                errors.push('Regional dialect PRs must modify only community/content/japanese-regional-dialects.json');
+              }
+
+              try {
+                const dialectPath = 'pr-head/community/content/japanese-regional-dialects.json';
+                if (!fs.existsSync(dialectPath)) {
+                  errors.push('japanese-regional-dialects.json file not found in PR');
+                } else {
+                  const content = fs.readFileSync(dialectPath, 'utf8');
+
+                  try {
+                    const dialects = JSON.parse(content);
+
+                    if (!Array.isArray(dialects)) {
+                      errors.push('japanese-regional-dialects.json should be an array');
+                    } else {
+                      const invalidDialects = dialects.filter(function(d) {
+                        return !d.dialect || !d.standardJapanese || !d.english || !d.region || !d.note;
+                      });
+                      if (invalidDialects.length > 0) {
+                        errors.push('Each regional dialect entry must have dialect, standardJapanese, english, region, and note fields');
+                      }
+                    }
+                  } catch (parseErr) {
+                    errors.push(`Invalid JSON: ${parseErr.message}`);
+                  }
+
+                  if (!targetIssue) {
+                    warnings.push('Could not find a matching community issue for this regional dialect entry');
+                  }
+                }
+              } catch (e) {
+                errors.push(`Error reading regional dialects file: ${e.message}`);
               }
             }
 

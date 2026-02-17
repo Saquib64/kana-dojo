@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       force_type:
-        description: 'Force issue type: theme | fact | proverb | trivia | grammar | animeQuote'
+        description: 'Force issue type: theme | fact | proverb | trivia | grammar | animeQuote | idiom | regionalDialect'
         required: false
         type: string
       dry_run:
@@ -112,6 +112,8 @@ jobs:
             const triviaBacklogPath = 'community/backlog/trivia-backlog.json';
             const grammarBacklogPath = 'community/backlog/grammar-backlog.json';
             const animeQuotesBacklogPath = 'community/backlog/anime-quotes-backlog.json';
+            const idiomsBacklogPath = 'community/backlog/idioms-backlog.json';
+            const regionalDialectsBacklogPath = 'community/backlog/regional-dialects-backlog.json';
 
             const themesSourcePath = 'community/content/community-themes.json';
             const factsSourcePath = 'community/content/japan-facts.json';
@@ -124,6 +126,8 @@ jobs:
             const triviaLegacyPath = 'community/content/japan-trivia.json';
             const grammarSourcePath = 'community/content/japanese-grammar.json';
             const animeQuotesSourcePath = 'community/content/anime-quotes.json';
+            const idiomsSourcePath = 'community/content/japanese-idioms.json';
+            const regionalDialectsSourcePath = 'community/content/japanese-regional-dialects.json';
 
             let state = JSON.parse(fs.readFileSync(statePath, 'utf8'));
             const themes = JSON.parse(fs.readFileSync(themeBacklogPath, 'utf8'));
@@ -132,6 +136,8 @@ jobs:
             const trivia = JSON.parse(fs.readFileSync(triviaBacklogPath, 'utf8'));
             const grammar = JSON.parse(fs.readFileSync(grammarBacklogPath, 'utf8'));
             const animeQuotes = JSON.parse(fs.readFileSync(animeQuotesBacklogPath, 'utf8'));
+            const idioms = JSON.parse(fs.readFileSync(idiomsBacklogPath, 'utf8'));
+            const regionalDialects = JSON.parse(fs.readFileSync(regionalDialectsBacklogPath, 'utf8'));
 
             if (typeof state.consecutiveNoIssueRuns !== 'number') {
               state.consecutiveNoIssueRuns = 0;
@@ -193,6 +199,24 @@ jobs:
               }
             }
 
+            let existingIdioms = [];
+            if (fs.existsSync(idiomsSourcePath)) {
+              try {
+                existingIdioms = JSON.parse(fs.readFileSync(idiomsSourcePath, 'utf8'));
+              } catch (e) {
+                console.log(`Could not parse ${idiomsSourcePath}: ${e.message}`);
+              }
+            }
+
+            let existingRegionalDialects = [];
+            if (fs.existsSync(regionalDialectsSourcePath)) {
+              try {
+                existingRegionalDialects = JSON.parse(fs.readFileSync(regionalDialectsSourcePath, 'utf8'));
+              } catch (e) {
+                console.log(`Could not parse ${regionalDialectsSourcePath}: ${e.message}`);
+              }
+            }
+
             let themesSourceContent = '';
             let existingThemes = [];
             if (fs.existsSync(themesSourcePath)) {
@@ -221,7 +245,7 @@ jobs:
               }
             }
 
-            const defaultOrder = ['theme', 'fact', 'proverb', 'trivia', 'grammar', 'animeQuote'];
+            const defaultOrder = ['theme', 'fact', 'proverb', 'trivia', 'grammar', 'animeQuote', 'idiom', 'regionalDialect'];
             const typeOrder = forceType && defaultOrder.includes(forceType)
               ? [forceType]
               : defaultOrder;
@@ -603,6 +627,120 @@ jobs:
               animeQuotes[quoteIndex].issued = true;
               fs.writeFileSync(animeQuotesBacklogPath, JSON.stringify(animeQuotes, null, 2));
               backlogChanged = true;
+              } else if (nextType === 'idiom') {
+              item = idioms.find(function(i) {
+                if (i.issued || i.completed) {
+                  return false;
+                }
+                if (Array.isArray(existingIdioms)) {
+                  const exists = existingIdioms.some(function(ei) {
+                    if (!ei || typeof ei !== 'object') {
+                      return false;
+                    }
+                    return ei.japanese === i.japanese && ei.romaji === i.romaji && ei.english === i.english;
+                  });
+                  if (exists) {
+                    const idiomIdx = idioms.findIndex(function(ii) { return ii.id === i.id; });
+                    idioms[idiomIdx].completed = true;
+                    backlogChanged = true;
+                    return false;
+                  }
+                }
+                return true;
+              });
+
+              if (!item) {
+                console.log('No more idioms available in backlog.');
+                if (backlogChanged) {
+                  fs.writeFileSync(idiomsBacklogPath, JSON.stringify(idioms, null, 2));
+                }
+                continue;
+              }
+
+              const duplicateIdiom = await hasOpenIssueForQuery(`"Japanese Idiom" "${item.id}"`);
+
+              if (duplicateIdiom) {
+                console.log(`Issue already exists for idiom #${item.id}: Marking as issued and skipping.`);
+                const idiomIdx = idioms.findIndex(function(i) { return i.id === item.id; });
+                idioms[idiomIdx].issued = true;
+                fs.writeFileSync(idiomsBacklogPath, JSON.stringify(idioms, null, 2));
+                backlogChanged = true;
+                continue;
+              }
+
+              const tmpl = t.idiom;
+              const common = t.common;
+              issueTitle = tmpl.title
+                .replace('{emoji}', pickEmoji())
+                .replace('{id}', item.id);
+              issueTitle = addTitleAdjectives(issueTitle, tmpl.adjectives);
+
+              const instructions = t.buildInstructions(tmpl.file, tmpl.itemType, tmpl.prTitle).map((instr, i) => `${i + 1}. ${instr.replace(/{id}/g, item.id)}`);
+              const codeBlock = `\`\`\`json\n{\n  "japanese": "${item.japanese}",\n  "romaji": "${item.romaji}",\n  "english": "${item.english}",\n  "meaning": "${item.meaning}"\n}\n\`\`\``;
+
+              issueBody = `${tmpl.header}\n\n**Category:** ${tmpl.category}  \n**Difficulty:** ${common.difficulty}  \n**Estimated Time:** ${tmpl.estimatedTime}\n\n---\n\n### Your Task\n\n${tmpl.taskDescription}\n\n${tmpl.idiomHeader}\n\n| Japanese | Romaji | English |\n|----------|--------|---------|\n| **${item.japanese}** | ${item.romaji} | ${item.english} |\n\n> **Meaning:** ${item.meaning}\n\n${common.instructionsHeader}\n\n${instructions.slice(0, 5).join('\n')}\n\n${codeBlock}\n\n${instructions.slice(5).join('\n')}\n\n---\n\n${common.footer}`;
+
+              const idiomIndex = idioms.findIndex(function(i) { return i.id === item.id; });
+              idioms[idiomIndex].issued = true;
+              fs.writeFileSync(idiomsBacklogPath, JSON.stringify(idioms, null, 2));
+              backlogChanged = true;
+              } else if (nextType === 'regionalDialect') {
+              item = regionalDialects.find(function(d) {
+                if (d.issued || d.completed) {
+                  return false;
+                }
+                if (Array.isArray(existingRegionalDialects)) {
+                  const exists = existingRegionalDialects.some(function(ed) {
+                    if (!ed || typeof ed !== 'object') {
+                      return false;
+                    }
+                    return ed.dialect === d.dialect && ed.standardJapanese === d.standardJapanese && ed.region === d.region;
+                  });
+                  if (exists) {
+                    const dialectIdx = regionalDialects.findIndex(function(di) { return di.id === d.id; });
+                    regionalDialects[dialectIdx].completed = true;
+                    backlogChanged = true;
+                    return false;
+                  }
+                }
+                return true;
+              });
+
+              if (!item) {
+                console.log('No more regional dialect entries available in backlog.');
+                if (backlogChanged) {
+                  fs.writeFileSync(regionalDialectsBacklogPath, JSON.stringify(regionalDialects, null, 2));
+                }
+                continue;
+              }
+
+              const duplicateDialect = await hasOpenIssueForQuery(`"Regional Dialect Entry" "${item.id}"`);
+
+              if (duplicateDialect) {
+                console.log(`Issue already exists for regional dialect #${item.id}: Marking as issued and skipping.`);
+                const dialectIdx = regionalDialects.findIndex(function(d) { return d.id === item.id; });
+                regionalDialects[dialectIdx].issued = true;
+                fs.writeFileSync(regionalDialectsBacklogPath, JSON.stringify(regionalDialects, null, 2));
+                backlogChanged = true;
+                continue;
+              }
+
+              const tmpl = t.regionalDialect;
+              const common = t.common;
+              issueTitle = tmpl.title
+                .replace('{emoji}', pickEmoji())
+                .replace('{id}', item.id);
+              issueTitle = addTitleAdjectives(issueTitle, tmpl.adjectives);
+
+              const instructions = t.buildInstructions(tmpl.file, tmpl.itemType, tmpl.prTitle).map((instr, i) => `${i + 1}. ${instr.replace(/{id}/g, item.id)}`);
+              const codeBlock = `\`\`\`json\n{\n  "dialect": "${item.dialect}",\n  "standardJapanese": "${item.standardJapanese}",\n  "english": "${item.english}",\n  "region": "${item.region}",\n  "note": "${item.note}"\n}\n\`\`\``;
+
+              issueBody = `${tmpl.header}\n\n**Category:** ${tmpl.category}  \n**Difficulty:** ${common.difficulty}  \n**Estimated Time:** ${tmpl.estimatedTime}\n\n---\n\n### Your Task\n\n${tmpl.taskDescription}\n\n${tmpl.dialectHeader}\n\n| Dialect | Standard Japanese | English | Region |\n|---------|-------------------|---------|--------|\n| **${item.dialect}** | ${item.standardJapanese} | ${item.english} | ${item.region} |\n\n> **Note:** ${item.note}\n\n${common.instructionsHeader}\n\n${instructions.slice(0, 5).join('\n')}\n\n${codeBlock}\n\n${instructions.slice(5).join('\n')}\n\n---\n\n${common.footer}`;
+
+              const dialectIndex = regionalDialects.findIndex(function(d) { return d.id === item.id; });
+              regionalDialects[dialectIndex].issued = true;
+              fs.writeFileSync(regionalDialectsBacklogPath, JSON.stringify(regionalDialects, null, 2));
+              backlogChanged = true;
             }
 
               if (issueTitle && issueBody && item) {
@@ -612,7 +750,7 @@ jobs:
             }
 
             if (!selectedType) {
-              console.log('No available items found across theme/fact/proverb backlogs.');
+              console.log('No available items found across all community backlogs.');
               state.lastRun = new Date().toISOString();
               state.consecutiveNoIssueRuns = (state.consecutiveNoIssueRuns || 0) + 1;
               fs.writeFileSync(statePath, JSON.stringify(state, null, 2));

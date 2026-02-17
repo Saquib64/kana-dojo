@@ -40,6 +40,8 @@ jobs:
             const triviaBacklogPath = 'community/backlog/trivia-backlog.json';
             const grammarBacklogPath = 'community/backlog/grammar-backlog.json';
             const animeQuotesBacklogPath = 'community/backlog/anime-quotes-backlog.json';
+            const idiomsBacklogPath = 'community/backlog/idioms-backlog.json';
+            const regionalDialectsBacklogPath = 'community/backlog/regional-dialects-backlog.json';
 
             let issues = [];
             let page = 1;
@@ -71,6 +73,8 @@ jobs:
             let trivia = JSON.parse(fs.readFileSync(triviaBacklogPath, 'utf8'));
             let grammar = JSON.parse(fs.readFileSync(grammarBacklogPath, 'utf8'));
             let animeQuotes = JSON.parse(fs.readFileSync(animeQuotesBacklogPath, 'utf8'));
+            let idioms = JSON.parse(fs.readFileSync(idiomsBacklogPath, 'utf8'));
+            let regionalDialects = JSON.parse(fs.readFileSync(regionalDialectsBacklogPath, 'utf8'));
 
             let skippedUnassigned = 0;
             let warnedAssigned = 0;
@@ -157,6 +161,32 @@ jobs:
                     console.log(`Re-enabled anime quote #${quoteId}${sourceTag}`);
                   } else if (quoteIndex !== -1 && animeQuotes[quoteIndex].completed) {
                     console.log(`Anime quote #${quoteId} is already completed, not re-enabling`);
+                  }
+                }
+              } else if (title.includes('Add New Japanese Idiom #')) {
+                const idiomIdMatch = title.match(/#(\d+)/);
+                if (idiomIdMatch) {
+                  const idiomId = parseInt(idiomIdMatch[1]);
+                  const idiomIndex = idioms.findIndex(function(i) { return i.id === idiomId; });
+                  if (idiomIndex !== -1 && !idioms[idiomIndex].completed) {
+                    idioms[idiomIndex].issued = false;
+                    needsCommit = true;
+                    console.log(`Re-enabled idiom #${idiomId}${sourceTag}`);
+                  } else if (idiomIndex !== -1 && idioms[idiomIndex].completed) {
+                    console.log(`Idiom #${idiomId} is already completed, not re-enabling`);
+                  }
+                }
+              } else if (title.includes('Add Regional Dialect Entry #')) {
+                const dialectIdMatch = title.match(/#(\d+)/);
+                if (dialectIdMatch) {
+                  const dialectId = parseInt(dialectIdMatch[1]);
+                  const dialectIndex = regionalDialects.findIndex(function(d) { return d.id === dialectId; });
+                  if (dialectIndex !== -1 && !regionalDialects[dialectIndex].completed) {
+                    regionalDialects[dialectIndex].issued = false;
+                    needsCommit = true;
+                    console.log(`Re-enabled regional dialect #${dialectId}${sourceTag}`);
+                  } else if (dialectIndex !== -1 && regionalDialects[dialectIndex].completed) {
+                    console.log(`Regional dialect #${dialectId} is already completed, not re-enabling`);
                   }
                 }
               }
@@ -247,6 +277,8 @@ jobs:
               fs.writeFileSync(triviaBacklogPath, JSON.stringify(trivia, null, 2));
               fs.writeFileSync(grammarBacklogPath, JSON.stringify(grammar, null, 2));
               fs.writeFileSync(animeQuotesBacklogPath, JSON.stringify(animeQuotes, null, 2));
+              fs.writeFileSync(idiomsBacklogPath, JSON.stringify(idioms, null, 2));
+              fs.writeFileSync(regionalDialectsBacklogPath, JSON.stringify(regionalDialects, null, 2));
               core.setOutput('needs_commit', 'true');
             } else {
               core.setOutput('needs_commit', 'false');
