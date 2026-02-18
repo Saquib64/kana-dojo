@@ -115,13 +115,11 @@ export default function TranslatorPage({ locale = 'en' }: TranslatorPageProps) {
         </div>
         <div>
           <h1 className='text-2xl font-bold text-(--main-color) sm:text-3xl'>
-            Free English to Japanese Translator
+            Free English to Japanese & Japanese to English Translator
           </h1>
           <p className='mt-1 text-sm text-(--secondary-color) sm:text-base'>
-            <strong>Translate English to Japanese</strong> or Japanese to
-            English instantly. Get accurate translations with{' '}
-            <strong>romaji pronunciation</strong> — no registration required.
-          </p>
+            <strong>Translate English to Japanese</strong> and Japanese to
+            English instantly. Get accurate results with <strong>romaji pronunciation</strong> support.</p>
         </div>
       </header>
 
@@ -268,3 +266,4 @@ export default function TranslatorPage({ locale = 'en' }: TranslatorPageProps) {
     </div>
   );
 }
+

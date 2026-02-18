@@ -20,9 +20,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     ...base,
-    title: 'Japanese Romaji Translator Guide | KanaDojo',
+    title: 'Romaji Translator Guide (Japanese to Romaji) | KanaDojo',
     description:
-      'Understand Japanese romaji output, pronunciation basics, and how to cross-check translations from Japanese scripts.',
+      'Learn how to use Japanese to romaji output for pronunciation and reading support, with practical checks for kana and kanji text.',
   };
 }
 
@@ -33,7 +33,7 @@ export default async function RomajiPage({ params }: PageProps) {
   return (
     <main className='mx-auto max-w-4xl px-4 py-10'>
       <h1 className='text-3xl font-bold text-(--main-color)'>
-        {isEs ? 'Guia de Romaji Japones' : 'Japanese Romaji Guide'}
+        {isEs ? 'Guia de Traductor Romaji Japones' : 'Japanese to Romaji Translator Guide'}
       </h1>
       <p className='mt-4 text-(--secondary-color)'>
         {isEs

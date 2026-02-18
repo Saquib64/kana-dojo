@@ -20,9 +20,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     ...base,
-    title: 'Japanese to English Translator | KanaDojo',
+    title: 'Japanese to English Translator Online | KanaDojo',
     description:
-      'Translate Japanese to English with support for hiragana, katakana, and kanji text. Built for learners and quick comprehension checks.',
+      'Translate Japanese to English online for free. Works with hiragana, katakana, and kanji for quick comprehension checks.',
   };
 }
 
@@ -33,7 +33,7 @@ export default async function JapaneseToEnglishPage({ params }: PageProps) {
   return (
     <main className='mx-auto max-w-4xl px-4 py-10'>
       <h1 className='text-3xl font-bold text-(--main-color)'>
-        {isEs ? 'Traductor de Japones a Ingles' : 'Japanese to English Translator'}
+        {isEs ? 'Traductor Online de Japones a Ingles' : 'Japanese to English Translator Online'}
       </h1>
       <p className='mt-4 text-(--secondary-color)'>
         {isEs
