@@ -525,12 +525,12 @@
     "id": 88,
     "fact": "Japan has a 'Hotel for the Deceased' where families can spend one more night with loved ones before cremation.",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 89,
     "fact": "The concept of 'kawaisa' (å¯æ„›ã•) or cuteness is so culturally important that it influences everything from government mascots to warning signs.",
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
