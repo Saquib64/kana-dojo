@@ -356,7 +356,7 @@
     "english": "Are you ready?",
     "game": "Final Fantasy X",
     "character": "Auron",
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
