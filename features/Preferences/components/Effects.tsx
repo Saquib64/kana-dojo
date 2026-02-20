@@ -43,36 +43,28 @@ const ORDERED_CLICK_EFFECTS = CLICK_EFFECT_MANUAL_ORDER.map(
 );
 
 const EMOJI_RAIN_POSITIONS = [
-  // Uniform honeycomb-inspired lattice with intentional edge overflow.
   { top: '-18%', left: '6%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '-18%', left: '38%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '-18%', left: '70%', size: 'text-xl', opacity: 'opacity-75' },
-
   { top: '6%', left: '-10%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '6%', left: '22%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '6%', left: '54%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '6%', left: '86%', size: 'text-xl', opacity: 'opacity-75' },
-
   { top: '30%', left: '6%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '30%', left: '38%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '30%', left: '70%', size: 'text-xl', opacity: 'opacity-75' },
-
   { top: '54%', left: '-10%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '54%', left: '22%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '54%', left: '54%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '54%', left: '86%', size: 'text-xl', opacity: 'opacity-75' },
-
   { top: '78%', left: '6%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '78%', left: '38%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '78%', left: '70%', size: 'text-xl', opacity: 'opacity-75' },
-
   { top: '102%', left: '-10%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '102%', left: '22%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '102%', left: '54%', size: 'text-xl', opacity: 'opacity-75' },
   { top: '102%', left: '86%', size: 'text-xl', opacity: 'opacity-75' },
 ] as const;
-
-// ─── Effect card ─────────────────────────────────────────────────────────────
 
 function EffectCard({
   id,
@@ -89,7 +81,7 @@ function EffectCard({
   onSelect: () => void;
   group: 'cursor-trail' | 'click';
 }) {
-  const rainEmoji = emoji || '•';
+  const rainEmoji = emoji || '*';
   const isNoneCard = id === 'none';
 
   return (
@@ -118,7 +110,7 @@ function EffectCard({
       {isNoneCard ? (
         <>
           <span className='text-base leading-none text-(--secondary-color)'>
-            —
+            -
           </span>
           <span className='text-center text-xs leading-tight'>{name}</span>
         </>
@@ -142,8 +134,6 @@ function EffectCard({
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
-
 const Effects = () => {
   const cursorTrailEffect = usePreferencesStore(s => s.cursorTrailEffect);
   const setCursorTrailEffect = usePreferencesStore(s => s.setCursorTrailEffect);
@@ -152,7 +142,6 @@ const Effects = () => {
 
   return (
     <div className='flex flex-col gap-6'>
-      {/* Cursor Trail — desktop only */}
       <CollapsibleSection
         title={
           <span className='flex items-center gap-2'>
@@ -182,7 +171,6 @@ const Effects = () => {
         </fieldset>
       </CollapsibleSection>
 
-      {/* Click / Tap Effects — all devices */}
       <CollapsibleSection
         title='Click Effects'
         icon={<Zap size={18} />}
