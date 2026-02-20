@@ -152,20 +152,53 @@ export default async function FAQPage({
   ];
 
   const faqsForSchema = groups.flatMap(group => group.faqs);
+  const pageUrl = `https://kanadojo.com/${locale}/faq`;
 
   const faqSchema = {
     '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    '@id': `https://kanadojo.com/${locale}/faq#faq`,
-    inLanguage: locale,
-    mainEntity: faqsForSchema.map(faq => ({
-      '@type': 'Question',
-      name: faq.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: faq.answer,
+    '@graph': [
+      {
+        '@type': 'WebPage',
+        '@id': `${pageUrl}#webpage`,
+        url: pageUrl,
+        name: t('title'),
+        description: t('subtitle'),
+        inLanguage: locale,
+        isPartOf: {
+          '@id': 'https://kanadojo.com/#website',
+        },
+        about: {
+          '@type': 'Thing',
+          name: 'Japanese learning',
+        },
       },
-    })),
+      {
+        '@type': 'FAQPage',
+        '@id': `${pageUrl}#faq`,
+        url: pageUrl,
+        inLanguage: locale,
+        mainEntity: faqsForSchema.map(faq => ({
+          '@type': 'Question',
+          name: faq.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: faq.answer,
+          },
+        })),
+      },
+      {
+        '@type': 'ItemList',
+        '@id': `${pageUrl}#sections`,
+        itemListOrder: 'https://schema.org/ItemListOrderAscending',
+        numberOfItems: groups.length,
+        itemListElement: groups.map((group, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: group.title,
+          url: `${pageUrl}#${group.id}`,
+        })),
+      },
+    ],
   };
 
   return (
@@ -221,7 +254,7 @@ export default async function FAQPage({
                 {t('links.glossary')}
               </Link>
               <Link
-                href='/translate'
+                href={`/${locale}/translate`}
                 className='rounded-full border border-(--border-color) bg-[color-mix(in_oklab,var(--card-color),transparent_0%)] px-4 py-2 text-sm font-semibold text-(--main-color) shadow-[0_1px_0_rgba(0,0,0,0.05)] transition-colors hover:bg-[color-mix(in_oklab,var(--card-color),var(--main-color)_6%)]'
               >
                 {t('links.translator')}
