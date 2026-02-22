@@ -1175,7 +1175,7 @@
     "romaji": "Ishi no ue ni mo san nen",
     "english": "Three years on a stone",
     "meaning": "Perseverance brings results",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1184,7 +1184,7 @@
     "romaji": "Isogaba maware",
     "english": "If in a hurry, go around",
     "meaning": "The safer path can be faster",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1193,7 +1193,7 @@
     "romaji": "Mikka bouzu",
     "english": "A three-day monk",
     "meaning": "Someone who quits quickly",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1202,7 +1202,7 @@
     "romaji": "Nodomoto sugireba atsusa wo wasureru",
     "english": "Once it passes your throat, you forget the heat",
     "meaning": "People forget hardships once they are over",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1211,7 +1211,7 @@
     "romaji": "Kuchi wa wazawai no moto",
     "english": "The mouth is the source of misfortune",
     "meaning": "Careless words cause trouble",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1220,7 +1220,7 @@
     "romaji": "Raku areba ku ari",
     "english": "After ease comes hardship",
     "meaning": "Good times and bad times alternate",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1229,7 +1229,7 @@
     "romaji": "Isseki nichou",
     "english": "One stone, two birds",
     "meaning": "Do two things with one action",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1238,7 +1238,7 @@
     "romaji": "Keizoku wa chikara nari",
     "english": "Continuation is power",
     "meaning": "Consistency builds strength",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1247,7 +1247,7 @@
     "romaji": "Fukusui bon ni kaerazu",
     "english": "Spilled water will not return to the tray",
     "meaning": "What is done cannot be undone",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1382,7 +1382,7 @@
     "romaji": "Naki tsura ni hachi",
     "english": "A bee on a crying face",
     "meaning": "Misfortune piles up",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1391,7 +1391,7 @@
     "romaji": "Nou aru taka wa tsume wo kakusu",
     "english": "A skilled hawk hides its talons",
     "meaning": "True skill is modest",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1400,7 +1400,7 @@
     "romaji": "Saru mo ki kara ochiru",
     "english": "Even monkeys fall from trees",
     "meaning": "Experts make mistakes",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1418,7 +1418,7 @@
     "romaji": "Yake ishi ni mizu",
     "english": "Water on a hot stone",
     "meaning": "A futile effort",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1427,7 +1427,7 @@
     "romaji": "Nasake wa hito no tame narazu",
     "english": "Kindness is not for others alone",
     "meaning": "Kindness comes back to you",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1436,7 +1436,7 @@
     "romaji": "Ishibashi wo tataite wataru",
     "english": "Tap a stone bridge before crossing",
     "meaning": "Be very cautious",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1445,7 +1445,7 @@
     "romaji": "Issun saki wa yami",
     "english": "An inch ahead is darkness",
     "meaning": "The future is uncertain",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1455,7 +1455,7 @@
     "english": "Good fortune comes to a laughing home",
     "meaning": "Happiness invites luck",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 163,
@@ -1463,7 +1463,7 @@
     "romaji": "Ugo no takenoko",
     "english": "Bamboo shoots after rain",
     "meaning": "Things spring up rapidly",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1472,7 +1472,7 @@
     "romaji": "Senri no michi mo ippo kara",
     "english": "A journey of a thousand miles begins with one step",
     "meaning": "Start small",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1482,7 +1482,7 @@
     "english": "Early rising brings three coins of benefit",
     "meaning": "Wake early for advantage",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 166,
@@ -1499,7 +1499,7 @@
     "romaji": "Ni to wo ou mono wa itto wo mo ezu",
     "english": "Chase two rabbits, catch none",
     "meaning": "Focus on one thing",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1517,7 +1517,7 @@
     "romaji": "Kuchi wa wazawai no moto",
     "english": "The mouth is the source of misfortune",
     "meaning": "Careless words cause trouble",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1527,7 +1527,7 @@
     "english": "You can’t get the tiger’s cub without entering the lair",
     "meaning": "No reward without risk",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 171,
@@ -1535,7 +1535,7 @@
     "romaji": "Ashita wa ashita no kaze ga fuku",
     "english": "Tomorrow’s wind will blow tomorrow",
     "meaning": "Don’t worry too much about the future",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1544,7 +1544,7 @@
     "romaji": "Raku areba ku ari",
     "english": "With comfort comes hardship",
     "meaning": "Life has ups and downs",
-    "completed": false,
+    "completed": true,
     "issued": false
   },
   {
@@ -1562,7 +1562,7 @@
     "romaji": "Ichijitsu senshuu",
     "english": "A day feels like a thousand autumns",
     "meaning": "Waiting makes time feel long",
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
