@@ -1305,7 +1305,7 @@
     "id": 218,
     "fact": "The Japanese term 'gacha-gacha' is onomatopoeia for capsule toy machines: the crank sound (gacha) and capsule drop (gacha).",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 219,
@@ -1323,12 +1323,12 @@
     "id": 221,
     "fact": "Japan has 'shuumatsu okashi' trends where limited-edition sweets appear for a season and then disappear, making them collectible.",
     "issued": false,
-    "completed": false
+    "completed": true
   },
   {
     "id": 222,
     "fact": "Japanese New Yearâ€™s cards ('nengajou', å¹´è³€çŠ¶) are traditionally delivered all at once on January 1st.",
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
