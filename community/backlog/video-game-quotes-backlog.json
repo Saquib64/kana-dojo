@@ -1136,7 +1136,7 @@
     "english": "Now, let's begin.",
     "game": "Metal Gear Solid",
     "character": "Otacon",
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
