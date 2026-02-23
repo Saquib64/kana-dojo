@@ -486,7 +486,7 @@
     "english": "This ends here.",
     "game": "Final Fantasy X",
     "character": "Auron",
-    "issued": false,
+    "issued": true,
     "completed": false
   },
   {
